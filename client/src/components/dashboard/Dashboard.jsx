@@ -9,7 +9,7 @@ import SkillsAcquired from './SkillsAcquired';
 import WeeklyActivityChart from './WeeklyActivityChart';
 import EventsCalendar from './EventsCalendar';
 import Leaderboard from './Leaderboard';
-import Alumni from './Alumni';
+
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -85,9 +85,7 @@ const Dashboard = () => {
       </div>
 
       {/* Fourth Row - Alumni Module */}
-      <div className="mt-6">
-        <Alumni />
-      </div>
+      
     </div>
   );
 };
