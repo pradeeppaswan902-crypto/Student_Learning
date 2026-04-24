@@ -34,6 +34,10 @@ const quizAttemptSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  startedAt: {
+    type: Date,
+    default: Date.now,
+  },
   isPassed: {
     type: Boolean,
     default: false,

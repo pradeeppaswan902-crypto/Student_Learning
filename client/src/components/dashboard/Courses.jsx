@@ -82,6 +82,9 @@ const Courses = () => {
         `/courses/${courseId}/modules/${moduleIndex}/lessons/${lessonIndex}/complete`
       );
       
+      // Record lesson view
+      await api.post(`/courses/${courseId}/modules/${moduleIndex}/lessons/${lessonIndex}/view`);
+      
       console.log('Lesson complete response:', response.data);
       
       // Update selected course state immediately with returned data

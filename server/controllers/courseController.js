@@ -233,6 +233,54 @@ export const markLessonComplete = async (req, res) => {
   }
 };
 
+// Record lesson view
+export const recordLessonView = async (req, res) => {
+  try {
+    const { courseId, moduleIndex, lessonIndex } = req.params;
+    const userId = req.user.id;
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+
+    if (!course.modules[moduleIndex] || !course.modules[moduleIndex].lessons[lessonIndex]) {
+      return res.status(404).json({ message: 'Lesson not found' });
+    }
+
+    // Update or create user progress
+    let progress = await UserProgress.findOne({
+      user: userId,
+      course: courseId,
+    });
+
+    if (!progress) {
+      progress = new UserProgress({
+        user: userId,
+        course: courseId,
+        completedLessons: [],
+        lessonViews: [],
+        attendancePercentage: 0,
+      });
+    }
+
+    // Check if lesson view is already recorded (to avoid duplicates in same day or something, but for now allow multiple)
+    progress.lessonViews.push({
+      moduleIndex: parseInt(moduleIndex),
+      lessonIndex: parseInt(lessonIndex),
+      viewedAt: new Date(),
+    });
+
+    progress.lastAccessed = new Date();
+    await progress.save();
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error recording lesson view:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 // Mark course as complete (demo feature)
 export const markCourseComplete = async (req, res) => {
   try {

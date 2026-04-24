@@ -3,6 +3,7 @@ import {
   getCourses,
   getCourseDetails,
   markLessonComplete,
+  recordLessonView,
   markCourseComplete,
 } from '../controllers/courseController.js';
 import { protect } from '../middleware/authMiddleware.js';
@@ -20,6 +21,9 @@ router.get('/:courseId', getCourseDetails);
 
 // Mark lesson as complete
 router.post('/:courseId/modules/:moduleIndex/lessons/:lessonIndex/complete', markLessonComplete);
+
+// Record lesson view
+router.post('/:courseId/modules/:moduleIndex/lessons/:lessonIndex/view', recordLessonView);
 
 // Mark course as complete (demo feature)
 router.post('/:courseId/complete', markCourseComplete);

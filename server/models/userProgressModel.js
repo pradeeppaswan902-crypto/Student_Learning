@@ -19,6 +19,14 @@ const userProgressSchema = new mongoose.Schema({
       default: Date.now,
     },
   }],
+  lessonViews: [{
+    moduleIndex: Number,
+    lessonIndex: Number,
+    viewedAt: {
+      type: Date,
+      default: Date.now,
+    },
+  }],
   attendancePercentage: {
     type: Number,
     default: 0,

@@ -185,6 +185,149 @@ const seedCourses = [
       },
     ],
   },
+{
+  name: "Node.js Backend Development",
+  instructor: "Mr. David Wilson",
+  thumbnail: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400",
+  modules: [
+    {
+      name: "Node.js Basics",
+      lessons: [
+        {
+          title: "Introduction to Node.js",
+          difficulty: "Beginner",
+          videoUrl: "https://example.com/node-video1",
+          notes: "Understand Node.js runtime, event loop, and basic setup.",
+          quiz: null,
+        },
+        {
+          title: "Modules and npm",
+          difficulty: "Beginner",
+          videoUrl: "https://example.com/node-video2",
+          notes: "Learn CommonJS, ES Modules, and package management with npm.",
+          quiz: null,
+          codeLab: "Create and publish a simple npm package",
+        },
+      ],
+    },
+    {
+      name: "Express.js Fundamentals",
+      lessons: [
+        {
+          title: "Building REST APIs",
+          difficulty: "Intermediate",
+          videoUrl: "https://example.com/node-video3",
+          notes: "Create RESTful APIs using Express.js.",
+          quiz: null,
+        },
+        {
+          title: "Middleware in Express",
+          difficulty: "Intermediate",
+          videoUrl: "https://example.com/node-video4",
+          notes: "Understand middleware functions and request handling.",
+          quiz: null,
+          codeLab: "Build authentication middleware",
+        },
+      ],
+    },
+  ],
+},
+{
+  name: "MongoDB Database Management",
+  instructor: "Ms. Lisa Anderson",
+  thumbnail: "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400",
+  modules: [
+    {
+      name: "MongoDB Basics",
+      lessons: [
+        {
+          title: "Introduction to MongoDB",
+          difficulty: "Beginner",
+          videoUrl: "https://example.com/mongo-video1",
+          notes: "Learn NoSQL concepts and MongoDB fundamentals.",
+          quiz: null,
+        },
+        {
+          title: "CRUD Operations",
+          difficulty: "Beginner",
+          videoUrl: "https://example.com/mongo-video2",
+          notes: "Create, Read, Update, and Delete operations in MongoDB.",
+          quiz: null,
+          codeLab: "Perform CRUD operations using Mongo Shell",
+        },
+      ],
+    },
+    {
+      name: "Mongoose Integration",
+      lessons: [
+        {
+          title: "Using Mongoose with Node.js",
+          difficulty: "Intermediate",
+          videoUrl: "https://example.com/mongo-video3",
+          notes: "Schema creation and model relationships using Mongoose.",
+          quiz: null,
+        },
+        {
+          title: "Population and Validation",
+          difficulty: "Intermediate",
+          videoUrl: "https://example.com/mongo-video4",
+          notes: "Learn document population and schema validation.",
+          quiz: null,
+          codeLab: "Create relational models using Mongoose",
+        },
+      ],
+    },
+  ],
+},
+{
+  name: "UI/UX Design Fundamentals",
+  instructor: "Mrs. Sophia Martinez",
+  thumbnail: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400",
+  modules: [
+    {
+      name: "Design Principles",
+      lessons: [
+        {
+          title: "Introduction to UI/UX",
+          difficulty: "Beginner",
+          videoUrl: "https://example.com/ui-video1",
+          notes: "Understand the difference between UI and UX design.",
+          quiz: null,
+        },
+        {
+          title: "Color Theory and Typography",
+          difficulty: "Beginner",
+          videoUrl: "https://example.com/ui-video2",
+          notes: "Learn how colors and fonts impact user experience.",
+          quiz: null,
+          codeLab: "Design a landing page wireframe",
+        },
+      ],
+    },
+    {
+      name: "Wireframing and Prototyping",
+      lessons: [
+        {
+          title: "Creating Wireframes",
+          difficulty: "Intermediate",
+          videoUrl: "https://example.com/ui-video3",
+          notes: "Build low-fidelity wireframes for web applications.",
+          quiz: null,
+        },
+        {
+          title: "Interactive Prototypes",
+          difficulty: "Intermediate",
+          videoUrl: "https://example.com/ui-video4",
+          notes: "Learn prototyping tools like Figma and Adobe XD.",
+          quiz: null,
+          codeLab: "Create a mobile app prototype",
+        },
+      ],
+    },
+  ],
+}
+
+
 ];
 
 const seedAssignments = [

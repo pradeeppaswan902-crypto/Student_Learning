@@ -29,7 +29,9 @@ const Leaderboard = ({ students = [] }) => {
     }
   };
 
-  const displayStudents = showAll ? students : students.slice(0, 5);
+  const displayStudents = showAll
+    ? students
+    : students.slice(0, 5);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
@@ -41,35 +43,45 @@ const Leaderboard = ({ students = [] }) => {
       </div>
 
       {students.length > 0 ? (
-        <div className="space-y-2">
-          {displayStudents.map((student, index) => (
+        <div className="space-y-3">
+          {displayStudents.map((student) => (
             <div
               key={student.rank}
-              className={`p-4 rounded-lg ${getRankColor(student.rank)} transition hover:shadow-md`}
+              className={`p-4 rounded-lg ${getRankColor(
+                student.rank
+              )} transition hover:shadow-md`}
             >
               <div className="flex items-center justify-between">
+                {/* Left Side */}
                 <div className="flex items-center gap-3">
                   <div className="text-2xl">
                     {getMedalIcon(student.rank)}
                   </div>
+
                   <div>
-                    <p className="text-gray-800 font-semibold text-sm">
+                    {/* NAME SHOW HERE */}
+                    <p className="text-gray-800 font-bold text-sm">
                       #{student.rank} - {student.name}
                     </p>
+
                     <p className="text-xs text-gray-600">
-                      Points
+                      Student Name: {student.name}
                     </p>
                   </div>
                 </div>
+
+                {/* Right Side */}
                 <div className="text-right">
                   <p className="text-gray-800 font-bold text-lg">
-                    {student.score}
+                    {student.points || student.score || 0}
                   </p>
-                  <p className="text-xs text-gray-500">pts</p>
+                  <p className="text-xs text-gray-500">
+                    Points
+                  </p>
                 </div>
               </div>
 
-              {/* Progress bar for top 3 */}
+              {/* Progress Bar only for Top 3 */}
               {student.rank <= 3 && (
                 <div className="mt-3 w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                   <div
@@ -80,8 +92,12 @@ const Leaderboard = ({ students = [] }) => {
                         ? 'bg-gray-400'
                         : 'bg-orange-500'
                     }`}
-                    style={{ width: `${((student.rank - 1) / students.length) * 100 + 30}%` }}
-                  ></div>
+                    style={{
+                      width: `${
+                        100 - student.rank * 15
+                      }%`,
+                    }}
+                  />
                 </div>
               )}
             </div>
@@ -100,7 +116,9 @@ const Leaderboard = ({ students = [] }) => {
           onClick={() => setShowAll(!showAll)}
           className="w-full mt-4 py-2 text-blue-600 text-sm font-semibold hover:bg-blue-50 rounded-lg transition"
         >
-          {showAll ? '▲ Show Less' : '▼ View Full Leaderboard'}
+          {showAll
+            ? '▲ Show Less'
+            : '▼ View Full Leaderboard'}
         </button>
       )}
 

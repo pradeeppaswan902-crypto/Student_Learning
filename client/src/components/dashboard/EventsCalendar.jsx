@@ -29,26 +29,37 @@ const EventsCalendar = ({ events = [] }) => {
     }
   };
 
-  const parseEventDate = (eventDate) => {
-    return typeof eventDate === 'string' ? new Date(eventDate) : eventDate;
+  const parseDate = (date) => {
+    if (!date) return null;
+    const d = new Date(date);
+    return isNaN(d.getTime()) ? null : d;
   };
 
   const formatDate = (date) => {
-    const parsed = parseEventDate(date);
-    const options = { month: 'short', day: 'numeric', year: 'numeric' };
-    return parsed.toLocaleDateString('en-US', options);
+    const parsed = parseDate(date);
+    if (!parsed) return 'Invalid date';
+
+    return parsed.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
   };
 
-  const isUpcoming = (eventDate) => {
-    const parsed = parseEventDate(eventDate);
+  const isUpcoming = (date) => {
+    const parsed = parseDate(date);
+    if (!parsed) return false;
     return parsed > new Date();
   };
 
-  const upcomingEvents = events
-    .filter(event => isUpcoming(event.date))
-    .sort((a, b) => a.date - b.date);
+  // ✅ FIXED: safe filtering + proper sorting
+  const upcomingEvents = (events || [])
+    .filter((event) => isUpcoming(event.date))
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-  const displayEvents = expanded ? upcomingEvents : upcomingEvents.slice(0, 3);
+  const displayEvents = expanded
+    ? upcomingEvents
+    : upcomingEvents.slice(0, 3);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
@@ -61,14 +72,17 @@ const EventsCalendar = ({ events = [] }) => {
 
       {displayEvents.length > 0 ? (
         <div className="space-y-3">
-          {displayEvents.map((event) => (
+          {displayEvents.map((event, index) => (
             <div
-              key={event.id}
+              key={event.id || index}
               className={`p-4 rounded-lg ${getEventColor(event.type)}`}
             >
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xl">{getEventIcon(event.type)}</span>
+                  <span className="text-xl">
+                    {getEventIcon(event.type)}
+                  </span>
+
                   <div>
                     <p className="text-gray-800 font-semibold text-sm">
                       {event.title}
@@ -78,8 +92,12 @@ const EventsCalendar = ({ events = [] }) => {
                     </p>
                   </div>
                 </div>
+
                 <span className="text-xs font-semibold px-2 py-1 bg-white rounded-full text-gray-700">
-                  {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
+                  {event.type
+                    ? event.type.charAt(0).toUpperCase() +
+                      event.type.slice(1)
+                    : 'Event'}
                 </span>
               </div>
             </div>
@@ -104,7 +122,8 @@ const EventsCalendar = ({ events = [] }) => {
 
       <div className="mt-4 pt-4 border-t border-gray-200">
         <p className="text-xs text-gray-500 text-center">
-          {upcomingEvents.length} upcoming event{upcomingEvents.length !== 1 ? 's' : ''}
+          {upcomingEvents.length} upcoming event
+          {upcomingEvents.length !== 1 ? 's' : ''}
         </p>
       </div>
     </div>

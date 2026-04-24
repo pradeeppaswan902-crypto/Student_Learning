@@ -195,7 +195,7 @@ const Quizzes = () => {
     const currentAnswer = getCurrentAnswer(currentQuestionIndex);
 
     return (
-      <div className="space-y-6 ">
+      <div className="space-y-6 my-10">
         {/* Quiz Header */}
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex justify-between items-center mb-4">
