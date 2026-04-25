@@ -681,47 +681,19 @@ const seedQuizzes = [
   }
 ];
 
-const seedAttendance = [
-  // Attendance for React course (course index 0)
-  { user: null, course: null, sessionDate: new Date(2026, 3, 1), status: 'present', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 3), status: 'present', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 5), status: 'absent', sessionType: 'lab' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 8), status: 'present', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 10), status: 'present', sessionType: 'tutorial' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 12), status: 'late', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 15), status: 'present', sessionType: 'lab' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 17), status: 'present', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 19), status: 'absent', sessionType: 'tutorial' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 22), status: 'present', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 24), status: 'present', sessionType: 'lab' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 26), status: 'present', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 29), status: 'late', sessionType: 'tutorial' },
-
-  // Attendance for JavaScript course (course index 1)
-  { user: null, course: null, sessionDate: new Date(2026, 3, 2), status: 'present', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 4), status: 'present', sessionType: 'lab' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 6), status: 'present', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 9), status: 'absent', sessionType: 'tutorial' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 11), status: 'present', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 13), status: 'present', sessionType: 'lab' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 16), status: 'late', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 18), status: 'present', sessionType: 'tutorial' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 20), status: 'present', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 23), status: 'absent', sessionType: 'lab' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 25), status: 'present', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 27), status: 'present', sessionType: 'tutorial' },
-
-  // Attendance for Python course (course index 2)
-  { user: null, course: null, sessionDate: new Date(2026, 3, 1), status: 'present', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 4), status: 'present', sessionType: 'lab' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 7), status: 'present', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 10), status: 'late', sessionType: 'tutorial' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 13), status: 'present', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 16), status: 'present', sessionType: 'lab' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 19), status: 'absent', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 22), status: 'present', sessionType: 'tutorial' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 25), status: 'present', sessionType: 'lecture' },
-  { user: null, course: null, sessionDate: new Date(2026, 3, 28), status: 'present', sessionType: 'lab' },
+// Seed attendance sessions for every course so dashboard shows data everywhere.
+// We assign the same template sessions to each course (dates are offset by course index).
+const attendanceSessionTemplate = [
+  { dayOffset: 0, status: 'present', sessionType: 'lecture' },
+  { dayOffset: 2, status: 'present', sessionType: 'lab' },
+  { dayOffset: 4, status: 'absent', sessionType: 'tutorial' },
+  { dayOffset: 7, status: 'present', sessionType: 'lecture' },
+  { dayOffset: 9, status: 'late', sessionType: 'tutorial' },
+  { dayOffset: 11, status: 'present', sessionType: 'lab' },
+  { dayOffset: 14, status: 'present', sessionType: 'lecture' },
+  { dayOffset: 16, status: 'absent', sessionType: 'lab' },
+  { dayOffset: 18, status: 'present', sessionType: 'lecture' },
+  { dayOffset: 21, status: 'present', sessionType: 'tutorial' },
 ];
 
 const seedJobs = [
@@ -809,21 +781,27 @@ try {
   await Quiz.insertMany(seedQuizzes);
   await Job.insertMany(seedJobs);
 
-  // Set user and course IDs for attendance records
-  const courses = await Course.find({});
-  seedAttendance.forEach((record, index) => {
-    record.user = users[0]._id; // First user for all attendance records
-    // Distribute attendance across courses (React: 0-12, JS: 13-23, Python: 24+)
-    if (index < 13) {
-      record.course = courses[0]._id; // React course
-    } else if (index < 24) {
-      record.course = courses[1]._id; // JavaScript course
-    } else {
-      record.course = courses[2]._id; // Python course
-    }
-  });
+// Seed attendance for all courses for the first user
+const courses = await Course.find({});
+const baseDate = new Date(2026, 3, 1); // April 1, 2026
 
-  await Attendance.insertMany(seedAttendance);
+const attendanceDocs = courses.flatMap((course, courseIndex) =>
+  attendanceSessionTemplate.map((s) => {
+    const sessionDate = new Date(baseDate);
+    sessionDate.setDate(sessionDate.getDate() + s.dayOffset + courseIndex);
+
+    return {
+      user: users[0]._id,
+      course: course._id,
+      sessionDate,
+      status: s.status,
+      sessionType: s.sessionType,
+      markedBy: users[0]._id,
+    };
+  })
+);
+
+await Attendance.insertMany(attendanceDocs);
 
   console.log("✅ Seed complete: users, courses, assignments, quizzes, and attendance created.");
 } catch (error) {

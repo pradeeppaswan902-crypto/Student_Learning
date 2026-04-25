@@ -15,6 +15,7 @@ const Attendance = () => {
   const fetchAttendanceOverview = async () => {
     try {
       const response = await api.get('/attendance');
+      console.log(response.data);
       setAttendanceData(response.data);
     } catch (error) {
       console.error('Error fetching attendance:', error);
@@ -190,6 +191,11 @@ const Attendance = () => {
                       style={{ width: `${course.attendancePercentage}%` }}
                     ></div>
                   </div>
+                  {course.totalSessions === 0 && (
+                    <div className="text-xs text-gray-500 mt-2">
+                      No sessions marked yet
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 text-center">
