@@ -1,6 +1,7 @@
 // controllers/dashboardController.js
 
 import Assignment from '../models/assignmentModel.js';
+import Quiz from '../models/quizModel.js';
 import QuizAttempt from '../models/quizAttemptModel.js';
 import UserProgress from '../models/userProgressModel.js';
 import Course from '../models/courseModel.js';
@@ -43,6 +44,7 @@ export const getDashboardSummary = async (req, res) => {
     const now = new Date();
 
     const assignments = await Assignment.find({});
+    const quizzes = await Quiz.find({});
     const quizAttempts = await QuizAttempt.find({
       user: userId,
     }).populate('quiz', 'title');
@@ -292,6 +294,50 @@ export const getDashboardSummary = async (req, res) => {
     // FINAL RESPONSE
     // =====================================
 
+    // =====================================
+    // EVENTS (DUMMY + DEADLINES)
+    // =====================================
+    const events = [];
+
+    assignments.forEach((a) => {
+      if (!a.deadline) return;
+      events.push({
+        id: `assignment-${a._id}`,
+        type: 'assignment',
+        title: `${a.title} deadline`,
+        date: a.deadline,
+      });
+    });
+
+    quizzes.forEach((q) => {
+      const base = q.createdAt ? new Date(q.createdAt) : new Date();
+      const scheduled = new Date(base);
+      scheduled.setDate(scheduled.getDate() + 7);
+
+      events.push({
+        id: `quiz-${q._id}`,
+        type: 'quiz',
+        title: `${q.title} (scheduled)`,
+        date: scheduled,
+      });
+    });
+
+    // A couple of platform events (dummy)
+    events.push(
+      {
+        id: 'event-webinar',
+        type: 'event',
+        title: 'Career Webinar (Dummy)',
+        date: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3),
+      },
+      {
+        id: 'event-hackathon',
+        type: 'event',
+        title: 'Mini Hackathon (Dummy)',
+        date: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 10),
+      }
+    );
+
     res.json({
       academicScore,
 
@@ -320,6 +366,8 @@ export const getDashboardSummary = async (req, res) => {
       courseCompletionPercentage,
 
       leaderboard,
+
+      events,
 
       recentActivities: getRecentActivities(
         progressRecords,

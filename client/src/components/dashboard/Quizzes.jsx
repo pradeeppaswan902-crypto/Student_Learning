@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../confiq/api';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../context/AuthContext';
 
 const Quizzes = () => {
+  const { refreshDashboard } = useAuth();
   const [quizzes, setQuizzes] = useState([]);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -94,6 +96,7 @@ const Quizzes = () => {
       setResults(response.data);
       setIsQuizActive(false);
       toast.success('Quiz submitted successfully!');
+      refreshDashboard();
 
       // Refresh quizzes to update progress
       fetchQuizzes();
@@ -124,7 +127,7 @@ const Quizzes = () => {
 
   if (results) {
     return (
-      <div className="space-y-6 ">
+      <div className="space-y-6 my-15">
         <div className="flex items-center justify-between">
           <button
             onClick={() => setResults(null)}

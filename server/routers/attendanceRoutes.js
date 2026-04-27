@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   getAttendanceOverview,
+  getMonthlyAttendanceSummary,
   getCourseAttendance,
   markAttendance,
 } from '../controllers/attendanceController.js';
@@ -13,6 +14,9 @@ router.use(protect);
 
 // Get attendance overview for all courses
 router.get('/', getAttendanceOverview);
+
+// Get aggregated monthly summary (all courses)
+router.get('/monthly', getMonthlyAttendanceSummary);
 
 // Get detailed attendance for a specific course
 router.get('/:courseId', getCourseAttendance);

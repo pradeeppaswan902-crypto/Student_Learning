@@ -8,6 +8,7 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [dashboardRefreshTick, setDashboardRefreshTick] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -45,6 +46,8 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const refreshDashboard = () => setDashboardRefreshTick((t) => t + 1);
+
   // Set axios default header
   if (user?.token) {
     axios.defaults.headers.common["Authorization"] = `Bearer ${user.token}`;
@@ -53,7 +56,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, dashboardRefreshTick, refreshDashboard }}>
       {children}
     </AuthContext.Provider>
   );

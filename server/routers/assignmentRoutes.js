@@ -7,6 +7,7 @@ import {
   getAssignmentSummary,
 } from '../controllers/assignmentController.js';
 import { protect } from '../middleware/authMiddleware.js';
+import upload from '../middleware/upload.js';
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ router.get('/summary', getAssignmentSummary);
 router.get('/:assignmentId', getAssignmentDetails);
 
 // Submit an assignment
-router.post('/:assignmentId/submit', submitAssignment);
+router.post('/:assignmentId/submit', upload.single('file'), submitAssignment);
 
 // Evaluate assignment (demo feature)
 router.post('/:assignmentId/evaluate', evaluateAssignment);

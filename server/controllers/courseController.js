@@ -184,12 +184,6 @@ export const markLessonComplete = async (req, res) => {
       });
     }
 
-    // Update attendance percentage based on completed lessons
-    const attendancePercentage = course.totalLessons > 0
-      ? Math.round((progress.completedLessons.length / course.totalLessons) * 100)
-      : 0;
-    progress.attendancePercentage = attendancePercentage;
-
     progress.lastAccessed = new Date();
     await progress.save();
 
@@ -225,7 +219,7 @@ export const markLessonComplete = async (req, res) => {
       courseProgress,
       moduleProgress,
       totalCompletedLessons,
-      attendancePercentage,
+      attendancePercentage: progress.attendancePercentage || 0,
     });
   } catch (error) {
     console.error('Error marking lesson complete:', error);
@@ -319,7 +313,6 @@ export const markCourseComplete = async (req, res) => {
     });
 
     progress.completedLessons = allCompletedLessons;
-    progress.attendancePercentage = 100; // Set to 100% when course is completed
     progress.lastAccessed = new Date();
     await progress.save();
 
@@ -335,7 +328,7 @@ export const markCourseComplete = async (req, res) => {
       success: true,
       message: 'Course marked as complete',
       progressPercentage: 100,
-      attendancePercentage: 100,
+      attendancePercentage: progress.attendancePercentage || 0,
       completedLessons: allCompletedLessons.length,
       totalLessons,
     });

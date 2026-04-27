@@ -2,6 +2,45 @@ import Attendance from '../models/attendanceModel.js';
 import Course from '../models/courseModel.js';
 import UserProgress from '../models/userProgressModel.js';
 
+// Get aggregated monthly attendance summary for a user (all courses combined)
+export const getMonthlyAttendanceSummary = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const attendanceRecords = await Attendance.find({ user: userId }).sort({
+      sessionDate: -1,
+    });
+
+    const monthlySummary = {};
+    attendanceRecords.forEach((record) => {
+      const monthKey = record.sessionDate.toISOString().slice(0, 7); // YYYY-MM
+      if (!monthlySummary[monthKey]) {
+        monthlySummary[monthKey] = {
+          month: monthKey,
+          total: 0,
+          present: 0,
+          absent: 0,
+          late: 0,
+        };
+      }
+      monthlySummary[monthKey].total++;
+      monthlySummary[monthKey][record.status]++;
+    });
+
+    const monthlyData = Object.values(monthlySummary)
+      .map((m) => ({
+        ...m,
+        attendancePercentage: m.total > 0 ? Math.round((m.present / m.total) * 100) : 0,
+      }))
+      .sort((a, b) => b.month.localeCompare(a.month));
+
+    res.json({ monthlySummary: monthlyData });
+  } catch (error) {
+    console.error('Error fetching monthly attendance summary:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 // Get attendance for all courses for a user
 export const getAttendanceOverview = async (req, res) => {
   try {

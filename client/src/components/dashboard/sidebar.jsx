@@ -77,7 +77,7 @@ const Sidebar = ({ active, setActive, isCollapsed, setIsCollapsed }) => {
       </div>
 
       {/* LOGOUT */}
-      <div>
+       {/* <div>
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 text-sm rounded-lg h-10 w-full px-2 transition-all
@@ -86,7 +86,9 @@ const Sidebar = ({ active, setActive, isCollapsed, setIsCollapsed }) => {
           <MdLogout size={18} />
           {!isCollapsed && "Logout"}
         </button>
-      </div>
+      </div>*/ }
+     
+      
     </div>
   );
 };

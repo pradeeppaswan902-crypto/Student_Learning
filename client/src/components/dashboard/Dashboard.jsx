@@ -13,7 +13,7 @@ import Leaderboard from './Leaderboard';
 import RecentActivities from './RecentActivities';
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, dashboardRefreshTick } = useAuth();
 
   const [dashboardData, setDashboardData] = useState({
     academicScore: 0,
@@ -40,7 +40,7 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       try {
         const res = await api.get('/dashboard/summary');
-
+        
         setDashboardData({
           academicScore: res.data.academicScore || 0,
           assignmentSummary: res.data.assignmentSummary || {
@@ -65,7 +65,7 @@ const Dashboard = () => {
     };
 
     fetchDashboardData();
-  }, []);
+  }, [dashboardRefreshTick]);
 
   return (
     <div className="bg-gray-50 min-h-screen p-6 my-6">

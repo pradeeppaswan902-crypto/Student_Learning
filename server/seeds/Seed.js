@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
+console.log("SEED FILE STARTED");
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 import bcrypt from "bcryptjs";
 import User from "../models/userModel.js";
 import Course from "../models/courseModel.js";
@@ -8,11 +11,13 @@ import Quiz from "../models/quizModel.js";
 import Attendance from "../models/attendanceModel.js";
 import Job from "../models/jobModel.js";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
 const seedUsers = [
-  { email: "rahul@gmail.com", password: "123456" },
-  { email: "student@example.com", password: "password123" },
+  { name: "Rahul", email: "rahul@gmail.com", password: "123456" },
+  { name: "John Doe", email: "student@example.com", password: "password123" },
 ];
 
 const seedCourses = [
@@ -683,17 +688,60 @@ const seedQuizzes = [
 
 // Seed attendance sessions for every course so dashboard shows data everywhere.
 // We assign the same template sessions to each course (dates are offset by course index).
-const attendanceSessionTemplate = [
-  { dayOffset: 0, status: 'present', sessionType: 'lecture' },
-  { dayOffset: 2, status: 'present', sessionType: 'lab' },
-  { dayOffset: 4, status: 'absent', sessionType: 'tutorial' },
-  { dayOffset: 7, status: 'present', sessionType: 'lecture' },
-  { dayOffset: 9, status: 'late', sessionType: 'tutorial' },
-  { dayOffset: 11, status: 'present', sessionType: 'lab' },
-  { dayOffset: 14, status: 'present', sessionType: 'lecture' },
-  { dayOffset: 16, status: 'absent', sessionType: 'lab' },
-  { dayOffset: 18, status: 'present', sessionType: 'lecture' },
-  { dayOffset: 21, status: 'present', sessionType: 'tutorial' },
+const attendanceTemplatesByCourse = [
+  // React → High attendance (~90%)
+  [
+    { dayOffset: 0, status: "present", sessionType: "lecture" },
+    { dayOffset: 2, status: "present", sessionType: "lab" },
+    { dayOffset: 4, status: "present", sessionType: "tutorial" },
+    { dayOffset: 6, status: "late", sessionType: "lecture" },
+    { dayOffset: 8, status: "present", sessionType: "lab" },
+  ],
+
+  // JavaScript → Medium attendance (~75%)
+  [
+    { dayOffset: 0, status: "present", sessionType: "lecture" },
+    { dayOffset: 2, status: "absent", sessionType: "lab" },
+    { dayOffset: 4, status: "present", sessionType: "tutorial" },
+    { dayOffset: 6, status: "late", sessionType: "lecture" },
+    { dayOffset: 8, status: "absent", sessionType: "lab" },
+  ],
+
+  // Python → Lower attendance (~60%)
+  [
+    { dayOffset: 0, status: "present", sessionType: "lecture" },
+    { dayOffset: 2, status: "absent", sessionType: "lab" },
+    { dayOffset: 4, status: "absent", sessionType: "tutorial" },
+    { dayOffset: 6, status: "late", sessionType: "lecture" },
+    { dayOffset: 8, status: "present", sessionType: "lab" },
+  ],
+
+  // Node.js → Strong attendance
+  [
+    { dayOffset: 0, status: "present", sessionType: "lecture" },
+    { dayOffset: 2, status: "present", sessionType: "lab" },
+    { dayOffset: 4, status: "present", sessionType: "tutorial" },
+    { dayOffset: 6, status: "present", sessionType: "lecture" },
+    { dayOffset: 8, status: "late", sessionType: "lab" },
+  ],
+
+  // MongoDB → Average
+  [
+    { dayOffset: 0, status: "present", sessionType: "lecture" },
+    { dayOffset: 2, status: "absent", sessionType: "lab" },
+    { dayOffset: 4, status: "present", sessionType: "tutorial" },
+    { dayOffset: 6, status: "present", sessionType: "lecture" },
+    { dayOffset: 8, status: "late", sessionType: "lab" },
+  ],
+
+  // UI/UX → Very good
+  [
+    { dayOffset: 0, status: "present", sessionType: "lecture" },
+    { dayOffset: 2, status: "present", sessionType: "lab" },
+    { dayOffset: 4, status: "present", sessionType: "tutorial" },
+    { dayOffset: 6, status: "present", sessionType: "lecture" },
+    { dayOffset: 8, status: "present", sessionType: "lab" },
+  ],
 ];
 
 const seedJobs = [
@@ -765,6 +813,7 @@ try {
 
   const hashedUsers = await Promise.all(
     seedUsers.map(async (user) => ({
+      name: user.name,
       email: user.email,
       password: await bcrypt.hash(user.password, 10),
     }))
@@ -781,27 +830,31 @@ try {
   await Quiz.insertMany(seedQuizzes);
   await Job.insertMany(seedJobs);
 
-// Seed attendance for all courses for the first user
-const courses = await Course.find({});
-const baseDate = new Date(2026, 3, 1); // April 1, 2026
+  // Seed attendance for all courses for the first user.
+  // Each course gets its own attendance pattern; fallback to the first template.
+  const courses = await Course.find({});
+  const baseDate = new Date(2026, 3, 1); // April 1, 2026
 
-const attendanceDocs = courses.flatMap((course, courseIndex) =>
-  attendanceSessionTemplate.map((s) => {
-    const sessionDate = new Date(baseDate);
-    sessionDate.setDate(sessionDate.getDate() + s.dayOffset + courseIndex);
+  const attendanceDocs = courses.flatMap((course, courseIndex) => {
+    const template =
+      attendanceTemplatesByCourse[courseIndex] || attendanceTemplatesByCourse[0];
 
-    return {
-      user: users[0]._id,
-      course: course._id,
-      sessionDate,
-      status: s.status,
-      sessionType: s.sessionType,
-      markedBy: users[0]._id,
-    };
-  })
-);
+    return template.map((s) => {
+      const sessionDate = new Date(baseDate);
+      sessionDate.setDate(sessionDate.getDate() + s.dayOffset + courseIndex);
 
-await Attendance.insertMany(attendanceDocs);
+      return {
+        user: users[0]._id,
+        course: course._id,
+        sessionDate,
+        status: s.status,
+        sessionType: s.sessionType,
+        markedBy: users[0]._id,
+      };
+    });
+  });
+
+  await Attendance.insertMany(attendanceDocs);
 
   console.log("✅ Seed complete: users, courses, assignments, quizzes, and attendance created.");
 } catch (error) {

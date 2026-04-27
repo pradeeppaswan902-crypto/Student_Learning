@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../confiq/api';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../context/AuthContext';
 
 const Assignments = () => {
+  const { refreshDashboard } = useAuth();
   const [assignments, setAssignments] = useState([]);
   const [selectedAssignment, setSelectedAssignment] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -11,6 +13,7 @@ const Assignments = () => {
   const [submissionData, setSubmissionData] = useState({
     submissionType: 'text',
     content: '',
+    file: null,
   });
 
   const fetchAssignments = async () => {
@@ -37,9 +40,10 @@ const Assignments = () => {
         setSubmissionData({
           submissionType: response.data.userSubmission.submissionType,
           content: response.data.userSubmission.content,
+          file: null,
         });
       } else {
-        setSubmissionData({ submissionType: 'text', content: '' });
+        setSubmissionData({ submissionType: 'text', content: '', file: null });
       }
     } catch (error) {
       console.error('Error fetching assignment details:', error);
@@ -52,9 +56,16 @@ const Assignments = () => {
   }, []);
 
   const submitAssignment = async () => {
-    if (!submissionData.content.trim()) {
-      toast.error('Please provide submission content');
-      return;
+    if (submissionData.submissionType === 'file') {
+      if (!submissionData.file) {
+        toast.error('Please choose a file to upload');
+        return;
+      }
+    } else {
+      if (!submissionData.content.trim()) {
+        toast.error('Please provide submission content');
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -64,7 +75,23 @@ const Assignments = () => {
         ...submissionData
       });
 
-      const response = await api.post(`/assignments/${selectedAssignment._id}/submit`, submissionData);
+      const url = `/assignments/${selectedAssignment._id}/submit`;
+      let response;
+
+      if (submissionData.submissionType === 'file') {
+        const formData = new FormData();
+        formData.append('submissionType', 'file');
+        formData.append('file', submissionData.file);
+
+        response = await api.post(url, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      } else {
+        response = await api.post(url, {
+          submissionType: submissionData.submissionType,
+          content: submissionData.content,
+        });
+      }
       
       console.log('✅ Submission successful:', response.data);
       toast.success('Assignment submitted successfully!');
@@ -73,7 +100,11 @@ const Assignments = () => {
       const updatedAssignment = {
         ...selectedAssignment,
         userSubmission: {
-          ...submissionData,
+          submissionType: submissionData.submissionType,
+          content:
+            submissionData.submissionType === 'file'
+              ? response.data.fileUrl || 'File uploaded'
+              : submissionData.content,
           submittedAt: response.data.submittedAt,
           isLate: response.data.isLate,
           status: response.data.status,
@@ -98,6 +129,7 @@ const Assignments = () => {
             : assignment
         )
       );
+      refreshDashboard();
       
     } catch (error) {
       console.error('Error submitting assignment:', error);
@@ -164,6 +196,7 @@ const Assignments = () => {
             : assignment
         )
       );
+      refreshDashboard();
 
     } catch (error) {
       console.error('Error evaluating assignment:', error);
@@ -339,10 +372,11 @@ const Assignments = () => {
                 <div>
                   <span className="font-medium">Content:</span>
                   <div className="mt-2 p-3 bg-white rounded border text-gray-700 max-h-48 overflow-y-auto">
-                    {selectedAssignment.userSubmission.submissionType === 'link' ? (
+                    {['link', 'file'].includes(selectedAssignment.userSubmission.submissionType) ? (
                       <a href={selectedAssignment.userSubmission.content} target="_blank" rel="noopener noreferrer"
                          className="text-blue-600 hover:underline break-all">
-                        🔗 {selectedAssignment.userSubmission.content}
+                        {selectedAssignment.userSubmission.submissionType === 'file' ? '📄' : '🔗'}{' '}
+                        {selectedAssignment.userSubmission.content}
                       </a>
                     ) : (
                       <pre className="whitespace-pre-wrap font-mono text-sm">{selectedAssignment.userSubmission.content}</pre>
@@ -379,7 +413,14 @@ const Assignments = () => {
                 <label className="block text-sm font-medium mb-2">Submission Type</label>
                 <select
                   value={submissionData.submissionType}
-                  onChange={(e) => setSubmissionData({...submissionData, submissionType: e.target.value})}
+                  onChange={(e) =>
+                    setSubmissionData({
+                      ...submissionData,
+                      submissionType: e.target.value,
+                      content: '',
+                      file: null,
+                    })
+                  }
                   className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={isOverdue(selectedAssignment.deadline)}
                 >
@@ -393,10 +434,22 @@ const Assignments = () => {
 
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  {submissionData.submissionType === 'file' ? '📄 File Path/URL' :
+                  {submissionData.submissionType === 'file' ? '📄 Upload File' :
                    submissionData.submissionType === 'text' ? '📝 Text Content' : '🔗 External Link URL'}
                 </label>
-                {submissionData.submissionType === 'text' ? (
+                {submissionData.submissionType === 'file' ? (
+                  <input
+                    type="file"
+                    onChange={(e) =>
+                      setSubmissionData({
+                        ...submissionData,
+                        file: e.target.files?.[0] || null,
+                      })
+                    }
+                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    disabled={isOverdue(selectedAssignment.deadline)}
+                  />
+                ) : submissionData.submissionType === 'text' ? (
                   <textarea
                     value={submissionData.content}
                     onChange={(e) => setSubmissionData({...submissionData, content: e.target.value})}
@@ -410,7 +463,7 @@ const Assignments = () => {
                     type="url"
                     value={submissionData.content}
                     onChange={(e) => setSubmissionData({...submissionData, content: e.target.value})}
-                    placeholder={submissionData.submissionType === 'file' ? 'Enter file path or upload URL' : 'Enter external link URL'}
+                    placeholder="Enter external link URL"
                     className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     disabled={isOverdue(selectedAssignment.deadline)}
                   />

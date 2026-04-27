@@ -11,7 +11,7 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed  w-full z-50 flex justify-between items-center px-6 py-4 bg-gray-900 text-white shadow-md">
+    <header className="fixed w-full z-50 flex justify-between items-center px-6 py-4 bg-gray-900 text-white shadow-md">
       <h1 className="text-xl font-bold">
         Student Learning Management
       </h1>
@@ -23,7 +23,16 @@ const Header = () => {
           </Link>
         ) : (
           <>
-            
+            <span className="text-sm">
+              Welcome, {user?.name || "Student"}
+            </span>
+
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm font-medium transition"
+            >
+              Logout
+            </button>
           </>
         )}
       </nav>

@@ -1,5 +1,6 @@
 import Assignment from "../models/assignmentModel.js";
 import User from "../models/userModel.js";
+import cloudinary from "../config/cloudinary.js";
 
 /* =========================
    GET ALL ASSIGNMENTS
@@ -97,7 +98,7 @@ export const getAssignmentDetails = async (req, res) => {
 export const submitAssignment = async (req, res) => {
   try {
     const { assignmentId } = req.params;
-    const { submissionType, content } = req.body;
+    const { submissionType } = req.body;
     const userId = req.user.id;
 
     const assignment = await Assignment.findById(assignmentId);
@@ -108,6 +109,35 @@ export const submitAssignment = async (req, res) => {
 
     if (!assignment.submissionTypes.includes(submissionType)) {
       return res.status(400).json({ message: "Invalid submission type" });
+    }
+
+    let content = req.body.content || "";
+
+    // If file upload, store file URL as content
+    if (submissionType === "file") {
+      if (!req.file) {
+        return res.status(400).json({ message: "File is required" });
+      }
+
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "assignments",
+            resource_type: "auto",
+          },
+          (error, uploadResult) => {
+            if (error) reject(error);
+            else resolve(uploadResult);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+
+      content = result.secure_url;
+    } else {
+      if (!content || !content.trim()) {
+        return res.status(400).json({ message: "Submission content is required" });
+      }
     }
 
     const submittedAt = new Date();
@@ -146,6 +176,7 @@ export const submitAssignment = async (req, res) => {
       isLate,
       status,
       submittedAt,
+      fileUrl: submissionType === "file" ? content : null,
     });
   } catch (error) {
     console.error("Error submitting assignment:", error);

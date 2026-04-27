@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../confiq/api';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../context/AuthContext';
 
 const Courses = () => {
+  const { refreshDashboard } = useAuth();
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -66,6 +68,7 @@ const Courses = () => {
       }
       
       toast.success('Course marked as complete!');
+      refreshDashboard();
       
       // Refresh courses list
       const coursesResponse = await api.get('/courses');
@@ -114,6 +117,7 @@ const Courses = () => {
       }
       
       toast.success('Lesson marked as complete!');
+      refreshDashboard();
       
       // Refresh courses list to update overall progress
       await fetchCourses();
