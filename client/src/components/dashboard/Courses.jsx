@@ -127,6 +127,19 @@ const Courses = () => {
     }
   };
 
+  const fetchQuizForLesson = async (lesson) => {
+  try {
+    toast.success(`Quiz started for ${lesson.title}`);
+    
+    // future me yahan quiz page open karoge
+    // navigate(`/quiz/${lesson.quizId}`)
+    
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to start quiz");
+  }
+};
+
   const toggleModuleExpansion = (moduleIndex) => {
     if (!selectedCourse) return;
 
@@ -247,21 +260,47 @@ const Courses = () => {
                         )}
                       </div>
 
-                      {lesson.isCompleted && (
-                        <div className="mt-3 space-y-2">
-                          <div>
-                            <strong>Video:</strong> <a href={lesson.videoUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Watch Video</a>
-                          </div>
-                          <div>
-                            <strong>Notes:</strong> <p className="text-sm text-gray-700 mt-1">{lesson.notes}</p>
-                          </div>
-                          {lesson.codeLab && (
-                            <div>
-                              <strong>Code Lab:</strong> <p className="text-sm text-gray-700 mt-1">{lesson.codeLab}</p>
-                            </div>
-                          )}
-                        </div>
-                      )}
+                     {lesson.isCompleted && (
+  <div className="mt-3 space-y-2">
+    <div>
+      <strong>Video:</strong>
+      <a
+        href={lesson.videoUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 hover:underline"
+      >
+        Watch Video
+      </a>
+    </div>
+
+    <div>
+      <strong>Notes:</strong>
+      <p className="text-sm text-gray-700 mt-1">
+        {lesson.notes}
+      </p>
+    </div>
+
+    {/* YAHI ADD KARNA HAI */}
+    <div className="mt-4">
+      <button
+        onClick={() => fetchQuizForLesson(lesson)}
+        className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
+      >
+        Start Quiz (Attempt 1/5)
+      </button>
+    </div>
+
+    {lesson.codeLab && (
+      <div>
+        <strong>Code Lab:</strong>
+        <p className="text-sm text-gray-700 mt-1">
+          {lesson.codeLab}
+        </p>
+      </div>
+    )}
+  </div>
+)}
                     </div>
                   ))}
                 </div>

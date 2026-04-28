@@ -40,7 +40,7 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       try {
         const res = await api.get('/dashboard/summary');
-        
+
         setDashboardData({
           academicScore: res.data.academicScore || 0,
           assignmentSummary: res.data.assignmentSummary || {
@@ -50,13 +50,15 @@ const Dashboard = () => {
             evaluatedAssignments: 0,
           },
           learningStreak: res.data.learningStreak || 0,
-          skills: res.data.skills || { acquired: 0, total: 0 },
+          skills: res.data.skills || {
+            acquired: 0,
+            total: 0,
+          },
           weeklyActivity: res.data.weeklyActivity || [],
           recentActivities: res.data.recentActivities || [],
           events: res.data.events || [],
           leaderboard: res.data.leaderboard || [],
         });
-
       } catch (error) {
         console.error('Dashboard API Error:', error);
       } finally {
@@ -68,41 +70,59 @@ const Dashboard = () => {
   }, [dashboardRefreshTick]);
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6 my-6">
+    <div className="bg-gray-50 min-h-screen px-4 sm:px-6 lg:px-8 py-6 mt-14">
 
-      {/* Greeting */}
-      <GreetingSection studentName={user?.name || 'Student'} />
+      {/* Greeting Section */}
+      <div className="mb-6">
+        <GreetingSection studentName={user?.name || 'Student'} />
+      </div>
 
       {/* Top Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
         <AcademicScoreCard score={dashboardData.academicScore} />
-        <AssignmentSummary summary={dashboardData.assignmentSummary} loading={loading} />
+
+        <AssignmentSummary
+          summary={dashboardData.assignmentSummary}
+          loading={loading}
+        />
+
         <LearningStreak streak={dashboardData.learningStreak} />
       </div>
 
-      {/* Skills + Chart */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-        <SkillsAcquired
-          acquired={dashboardData.skills.acquired}
-          total={dashboardData.skills.total}
-        />
+      {/* Skills + Weekly Chart */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mt-6">
 
-        <div className="lg:col-span-2">
+        <div className="w-full">
+          <SkillsAcquired
+            acquired={dashboardData.skills.acquired}
+            total={dashboardData.skills.total}
+          />
+        </div>
+
+        <div className="xl:col-span-2 w-full overflow-x-auto">
           <WeeklyActivityChart data={dashboardData.weeklyActivity} />
         </div>
       </div>
 
       {/* Events + Leaderboard + Activities */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-        <EventsCalendar events={dashboardData.events} />
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mt-6">
 
-        <Leaderboard students={dashboardData.leaderboard} />
+        <div className="w-full">
+          <EventsCalendar events={dashboardData.events} />
+        </div>
 
-        <RecentActivities activities={dashboardData.recentActivities} />
+        <div className="w-full overflow-x-auto">
+          <Leaderboard students={dashboardData.leaderboard} />
+        </div>
+
+        <div className="w-full">
+          <RecentActivities activities={dashboardData.recentActivities} />
+        </div>
       </div>
 
     </div>
   );
 };
+
 
 export default Dashboard;

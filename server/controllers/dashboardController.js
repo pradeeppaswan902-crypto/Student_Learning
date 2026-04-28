@@ -194,22 +194,39 @@ export const getDashboardSummary = async (req, res) => {
     });
 
     // =====================================
-    // LEARNING STREAK
-    // =====================================
+// LEARNING STREAK
+// =====================================
 
-    let streak = 0;
-    const current = new Date(now);
+let streak = 0;
 
-    for (let i = 0; i < 365; i++) {
-      const key = getDateKey(current);
+const today = new Date(now);
+const yesterday = new Date(now);
+yesterday.setDate(yesterday.getDate() - 1);
 
-      if (activityDays.has(key)) {
-        streak++;
-        current.setDate(current.getDate() - 1);
-      } else {
-        break;
-      }
+const todayKey = getDateKey(today);
+const yesterdayKey = getDateKey(yesterday);
+
+// Agar aaj ya kal activity hai tabhi streak calculate karo
+if (
+  activityDays.has(todayKey) ||
+  activityDays.has(yesterdayKey)
+) {
+  // Agar aaj activity nahi hai to kal se start karo
+  const current = activityDays.has(todayKey)
+    ? new Date(today)
+    : new Date(yesterday);
+
+  for (let i = 0; i < 365; i++) {
+    const key = getDateKey(current);
+
+    if (activityDays.has(key)) {
+      streak++;
+      current.setDate(current.getDate() - 1);
+    } else {
+      break;
     }
+  }
+}
 
     // =====================================
     // COURSE COMPLETION %
