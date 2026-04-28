@@ -292,8 +292,11 @@ const Quizzes = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {quizzes.map((quiz) => (
-          <div key={quiz._id} className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="p-6">
+          <div
+            key={quiz._id}
+            className="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col"
+          >
+            <div className="p-6 flex flex-col h-full">
               <h3 className="text-xl font-semibold mb-2">{quiz.title}</h3>
               <div className="text-gray-600 mb-4">
                 <p>{quiz.totalQuestions} questions</p>
@@ -310,12 +313,14 @@ const Quizzes = () => {
                 </div>
               )}
 
-              <button
-                onClick={() => startQuiz(quiz)}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-              >
-                {quiz.lastAttempt ? 'Retake Quiz' : 'Start Quiz'}
-              </button>
+              <div className="mt-auto">
+                <button
+                  onClick={() => startQuiz(quiz)}
+                  className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                >
+                  {quiz.lastAttempt ? 'Retake Quiz' : 'Start Quiz'}
+                </button>
+              </div>
             </div>
           </div>
         ))}

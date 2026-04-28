@@ -50,7 +50,7 @@ const Courses = () => {
   const markCourseComplete = async (courseId) => {
     try {
       const response = await api.post(`/courses/${courseId}/complete`);
-      
+
       // Update selected course state immediately
       if (selectedCourse && selectedCourse._id === courseId) {
         setSelectedCourse(prevCourse => ({
@@ -66,10 +66,10 @@ const Courses = () => {
           })),
         }));
       }
-      
+
       toast.success('Course marked as complete!');
       refreshDashboard();
-      
+
       // Refresh courses list
       const coursesResponse = await api.get('/courses');
       setCourses(coursesResponse.data);
@@ -84,17 +84,17 @@ const Courses = () => {
       const response = await api.post(
         `/courses/${courseId}/modules/${moduleIndex}/lessons/${lessonIndex}/complete`
       );
-      
+
       // Record lesson view
       await api.post(`/courses/${courseId}/modules/${moduleIndex}/lessons/${lessonIndex}/view`);
-      
+
       console.log('Lesson complete response:', response.data);
-      
+
       // Update selected course state immediately with returned data
       if (selectedCourse && selectedCourse._id === courseId) {
         const modIdx = parseInt(moduleIndex);
         const lesIdx = parseInt(lessonIndex);
-        
+
         setSelectedCourse(prevCourse => ({
           ...prevCourse,
           progressPercentage: response.data.courseProgress,
@@ -115,10 +115,10 @@ const Courses = () => {
           }),
         }));
       }
-      
+
       toast.success('Lesson marked as complete!');
       refreshDashboard();
-      
+
       // Refresh courses list to update overall progress
       await fetchCourses();
     } catch (error) {
@@ -128,17 +128,17 @@ const Courses = () => {
   };
 
   const fetchQuizForLesson = async (lesson) => {
-  try {
-    toast.success(`Quiz started for ${lesson.title}`);
-    
-    // future me yahan quiz page open karoge
-    // navigate(`/quiz/${lesson.quizId}`)
-    
-  } catch (error) {
-    console.error(error);
-    toast.error("Failed to start quiz");
-  }
-};
+    try {
+      toast.success(`Quiz started for ${lesson.title}`);
+
+      // future me yahan quiz page open karoge
+      // navigate(`/quiz/${lesson.quizId}`)
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to start quiz");
+    }
+  };
 
   const toggleModuleExpansion = (moduleIndex) => {
     if (!selectedCourse) return;
@@ -230,19 +230,17 @@ const Courses = () => {
                   {module.lessons.map((lesson, lessonIndex) => (
                     <div
                       key={lessonIndex}
-                      className={`p-4 border rounded-lg ${
-                        lesson.isCompleted ? 'bg-green-50 border-green-200' : 'bg-gray-50'
-                      }`}
+                      className={`p-4 border rounded-lg ${lesson.isCompleted ? 'bg-green-50 border-green-200' : 'bg-gray-50'
+                        }`}
                     >
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <h4 className="font-medium">{lesson.title}</h4>
                           <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                            <span className={`px-2 py-1 rounded text-xs ${
-                              lesson.difficulty === 'Beginner' ? 'bg-green-100 text-green-800' :
-                              lesson.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                              'bg-red-100 text-red-800'
-                            }`}>
+                            <span className={`px-2 py-1 rounded text-xs ${lesson.difficulty === 'Beginner' ? 'bg-green-100 text-green-800' :
+                                lesson.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-red-100 text-red-800'
+                              }`}>
                               {lesson.difficulty}
                             </span>
                             {lesson.isCompleted && (
@@ -260,47 +258,47 @@ const Courses = () => {
                         )}
                       </div>
 
-                     {lesson.isCompleted && (
-  <div className="mt-3 space-y-2">
-    <div>
-      <strong>Video:</strong>
-      <a
-        href={lesson.videoUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 hover:underline"
-      >
-        Watch Video
-      </a>
-    </div>
+                      {lesson.isCompleted && (
+                        <div className="mt-3 space-y-2">
+                          <div>
+                            <strong>Video:</strong>
+                            <a
+                              href={lesson.videoUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline"
+                            >
+                              Watch Video
+                            </a>
+                          </div>
 
-    <div>
-      <strong>Notes:</strong>
-      <p className="text-sm text-gray-700 mt-1">
-        {lesson.notes}
-      </p>
-    </div>
+                          <div>
+                            <strong>Notes:</strong>
+                            <p className="text-sm text-gray-700 mt-1">
+                              {lesson.notes}
+                            </p>
+                          </div>
 
-    {/* YAHI ADD KARNA HAI */}
-    <div className="mt-4">
-      <button
-        onClick={() => fetchQuizForLesson(lesson)}
-        className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
-      >
-        Start Quiz (Attempt 1/5)
-      </button>
-    </div>
+                          {/* YAHI ADD KARNA HAI */}
+                          <div className="mt-4">
+                            <button
+                              onClick={() => fetchQuizForLesson(lesson)}
+                              className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
+                            >
+                              Start Quiz (Attempt 1/5)
+                            </button>
+                          </div>
 
-    {lesson.codeLab && (
-      <div>
-        <strong>Code Lab:</strong>
-        <p className="text-sm text-gray-700 mt-1">
-          {lesson.codeLab}
-        </p>
-      </div>
-    )}
-  </div>
-)}
+                          {lesson.codeLab && (
+                            <div>
+                              <strong>Code Lab:</strong>
+                              <p className="text-sm text-gray-700 mt-1">
+                                {lesson.codeLab}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -318,9 +316,14 @@ const Courses = () => {
         <h1 className="text-2xl font-bold">My Courses</h1>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Equal Size Course Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
         {courses.map((course) => (
-          <div key={course._id} className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div
+            key={course._id}
+            className="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col"
+          >
+            {/* Image Fixed Height */}
             {course.thumbnail && (
               <img
                 src={course.thumbnail}
@@ -328,16 +331,28 @@ const Courses = () => {
                 className="w-full h-48 object-cover"
               />
             )}
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-2">{course.name}</h3>
-              <p className="text-gray-600 mb-4">by {course.instructor}</p>
 
-              <div className="space-y-3 mb-4">
+            {/* Content Section */}
+            <div className="p-6 flex flex-col flex-1">
+              {/* Top Section */}
+              <div>
+                <h3 className="text-xl font-semibold mb-2 line-clamp-2">
+                  {course.name}
+                </h3>
+
+                <p className="text-gray-600 mb-4 line-clamp-1">
+                  by {course.instructor}
+                </p>
+              </div>
+
+              {/* Middle Section */}
+              <div className="space-y-4 flex-1">
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>Progress</span>
                     <span>{course.progressPercentage}%</span>
                   </div>
+
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
                       className="bg-blue-600 h-2 rounded-full transition-all duration-300"
@@ -351,6 +366,7 @@ const Courses = () => {
                     <span>Attendance</span>
                     <span>{course.attendancePercentage}%</span>
                   </div>
+
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
                       className="bg-green-600 h-2 rounded-full transition-all duration-300"
@@ -360,19 +376,23 @@ const Courses = () => {
                 </div>
               </div>
 
-              <div className="flex gap-2">
+              {/* Bottom Buttons */}
+              <div className="flex gap-2 mt-6">
                 <button
                   onClick={() => fetchCourseDetails(course._id)}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                 >
                   View Course
                 </button>
+
                 <button
                   onClick={() => markCourseComplete(course._id)}
                   className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm"
                   disabled={course.progressPercentage === 100}
                 >
-                  {course.progressPercentage === 100 ? 'Completed' : 'Mark Complete'}
+                  {course.progressPercentage === 100
+                    ? 'Completed'
+                    : 'Mark Complete'}
                 </button>
               </div>
             </div>
