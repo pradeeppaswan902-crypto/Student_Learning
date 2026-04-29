@@ -39,7 +39,7 @@ const Leaderboard = ({ students = [] }) => {
         <h3 className="text-gray-600 font-semibold text-sm">
           Top Students Leaderboard
         </h3>
-        <span className="text-2xl">🏆</span>
+        <span className="text-2xl"></span>
       </div>
 
       {students.length > 0 ? (
@@ -124,7 +124,7 @@ const Leaderboard = ({ students = [] }) => {
 
       <div className="mt-4 pt-4 border-t border-gray-200">
         <p className="text-xs text-gray-500 text-center">
-          🎯 Compete and climb the ranks!
+           Compete and climb the ranks!
         </p>
       </div>
     </div>

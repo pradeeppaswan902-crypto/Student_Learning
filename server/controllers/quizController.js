@@ -222,3 +222,38 @@ export const getQuizAttempts = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+// Get quiz by lesson (IMPORTANT for lesson-wise quiz)
+export const getQuizByLesson = async (req, res) => {
+  try {
+    const { lessonId } = req.params;
+
+    const quiz = await Quiz.findOne({  }); 
+     
+    console.log("Searching quiz for lesson:", lessonId);
+    console.log("Found quiz:", quiz);
+
+    if (!quiz) {
+      return res.status(404).json({
+        message: "No quiz found for this lesson",
+      });
+    }
+
+    const safeQuiz = {
+      _id: quiz._id,
+      title: quiz.title,
+      duration: quiz.duration,
+      totalQuestions: quiz.totalQuestions,
+      questions: quiz.questions.map((q) => ({
+        question: q.question,
+        type: q.type,
+        options: q.options,
+      })),
+    };
+
+    res.json(safeQuiz);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

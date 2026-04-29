@@ -48,9 +48,9 @@ const GreetingSection = ({ studentName }) => {
         </div>
         <div className="text-right">
           <div className="text-5xl">
-            {greeting === 'Good Morning' && '🌅'}
-            {greeting === 'Good Afternoon' && '☀️'}
-            {greeting === 'Good Evening' && '🌙'}
+            {greeting === 'Good Morning'}
+            {greeting === 'Good Afternoon'}
+            {greeting === 'Good Evening'}
           </div>
         </div>
       </div>

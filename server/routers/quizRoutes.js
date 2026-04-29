@@ -4,6 +4,7 @@ import {
   getQuizDetails,
   submitQuizAttempt,
   getQuizAttempts,
+  getQuizByLesson,
 } from '../controllers/quizController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -23,5 +24,7 @@ router.post('/:quizId/attempt', submitQuizAttempt);
 
 // Get quiz attempts for a user
 router.get('/:quizId/attempts', getQuizAttempts);
+
+router.get("/lesson/:lessonId", getQuizByLesson);
 
 export default router;

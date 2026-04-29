@@ -4,16 +4,22 @@ import "./App.css";
 import Header from "./components/Header";
 import Login from "./pages/Login";
 import Dashboard from "./pages/dashboard/Dashborads";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import Quizes from "./pages/dashboard/Quizes";
 
-// 👇 ADD THIS
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Toaster } from "react-hot-toast";
 
-// Protected Route Component
+// ✅ Protected Route
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
+  }
 
   return user ? children : <Navigate to="/login" />;
 };
@@ -24,15 +30,22 @@ function App() {
       <BrowserRouter>
         <div className="min-h-screen bg-gray-100">
 
-          {/* 👇 TOAST CONTAINER (IMPORTANT) */}
+          {/* Toast Notifications */}
           <Toaster position="top-right" reverseOrder={false} />
 
+          {/* Header */}
           <Header />
 
+          {/* Routes */}
           <Routes>
+
+            {/* Default route */}
             <Route path="/" element={<Navigate to="/login" />} />
+
+            {/* Login */}
             <Route path="/login" element={<Login />} />
 
+            {/* Dashboard */}
             <Route
               path="/dashboard"
               element={
@@ -41,6 +54,20 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* ✅ QUIZ ROUTE (FIXED) */}
+            <Route
+              path="/quiz/:quizId"
+              element={
+                <ProtectedRoute>
+                  <Quizes />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Fallback route */}
+            <Route path="*" element={<div>404 Page Not Found</div>} />
+
           </Routes>
         </div>
       </BrowserRouter>

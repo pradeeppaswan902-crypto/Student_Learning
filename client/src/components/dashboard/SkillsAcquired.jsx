@@ -24,7 +24,7 @@ const SkillsAcquired = ({ acquired = 0, total = 0 }) => {
         <h3 className="text-gray-600 font-semibold text-sm">
           Skills Acquired
         </h3>
-        <span className="text-2xl">⭐</span>
+        <span className="text-2xl"></span>
       </div>
 
       <div className="mb-6">

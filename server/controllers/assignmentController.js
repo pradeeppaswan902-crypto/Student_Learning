@@ -1,6 +1,7 @@
 import Assignment from "../models/assignmentModel.js";
 import User from "../models/userModel.js";
 import cloudinary from "../config/cloudinary.js";
+import QuizAttempt from "../models/quizAttemptModel.js";
 
 /* =========================
    GET ALL ASSIGNMENTS
@@ -192,12 +193,26 @@ export const evaluateAssignment = async (req, res) => {
     const { assignmentId } = req.params;
     const { studentId, marks, feedback } = req.body;
 
-    const userId = studentId === "current_user" ? req.user.id : studentId;
+    // Validate required fields
+    if (!studentId || marks === undefined) {
+      return res.status(400).json({
+        message: "studentId and marks are required",
+      });
+    }
 
-    const assignment = await Assignment.findById(assignmentId);
+    const userId =
+      studentId === "current_user" ? req.user.id : studentId;
+
+    // Find only assignment where this student has submitted
+    const assignment = await Assignment.findOne({
+      _id: assignmentId,
+      "submissions.student": userId,
+    });
 
     if (!assignment) {
-      return res.status(404).json({ message: "Assignment not found" });
+      return res.status(404).json({
+        message: "Assignment or submission not found",
+      });
     }
 
     const submission = assignment.submissions.find(
@@ -205,25 +220,29 @@ export const evaluateAssignment = async (req, res) => {
     );
 
     if (!submission) {
-      return res.status(404).json({ message: "Submission not found" });
+      return res.status(404).json({
+        message: "Submission not found",
+      });
     }
 
-    submission.marks = marks;
-    submission.feedback = feedback;
+    submission.marks = Number(marks);
+    submission.feedback = feedback || "";
     submission.status = "evaluated";
     submission.evaluatedAt = new Date();
 
     await assignment.save();
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: "Assignment evaluated successfully",
-      marks,
-      feedback,
+      marks: submission.marks,
+      feedback: submission.feedback,
     });
   } catch (error) {
     console.error("Error evaluating assignment:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({
+      message: "Server error",
+    });
   }
 };
 
@@ -234,6 +253,7 @@ export const getAssignmentSummary = async (req, res) => {
   try {
     const userId = req.user.id;
 
+    // Assignment Data
     const assignments = await Assignment.find({});
     const totalAssignments = assignments.length;
 
@@ -256,17 +276,41 @@ export const getAssignmentSummary = async (req, res) => {
       }
     });
 
-    const averageScore =
+    const assignmentAverage =
       evaluatedAssignments > 0
         ? Math.round(totalMarks / evaluatedAssignments)
         : 0;
 
+    // Quiz Data
+    const attempts = await QuizAttempt.find({ user: userId });
+
+    let quizTotal = 0;
+    let quizCount = 0;
+
+    attempts.forEach((attempt) => {
+      quizTotal += attempt.score || 0;
+      quizCount++;
+    });
+
+    const quizAverage =
+      quizCount > 0
+        ? Math.round(quizTotal / quizCount)
+        : 0;
+
+    // Final Academic Score
+    const academicScore = Math.round(
+      (assignmentAverage + quizAverage) / 2
+    );
+
     res.json({
       totalAssignments,
       completedAssignments,
-      averageScore,
       evaluatedAssignments,
+      assignmentAverage,
+      quizAverage,
+      academicScore,
     });
+
   } catch (error) {
     console.error("Error fetching assignment summary:", error);
     res.status(500).json({ message: "Server error" });

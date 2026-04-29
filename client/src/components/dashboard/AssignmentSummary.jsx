@@ -52,7 +52,7 @@ const AssignmentSummary = ({ summary: initialSummary = null, loading: externalLo
         <h3 className="text-gray-600 font-semibold text-sm">
           Assignment Progress
         </h3>
-        <span className="text-2xl">📝</span>
+        <span className="text-2xl"></span>
       </div>
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">

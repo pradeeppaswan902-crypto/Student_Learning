@@ -10,7 +10,7 @@ const LearningStreak = ({ streak = 0 }) => {
 
   const badge = getLevelBadge(streak);
 
-  // Generate visual representation of fire 🔥
+  // Generate visual representation of fire 
   const fireIntensity = Math.min(streak / 30, 1);
 
   return (
@@ -19,7 +19,7 @@ const LearningStreak = ({ streak = 0 }) => {
         <h3 className="text-gray-600 font-semibold text-sm">
           Learning Streak
         </h3>
-        <span className="text-3xl" style={{ opacity: 0.5 + fireIntensity * 0.5 }}>🔥</span>
+        <span className="text-3xl" style={{ opacity: 0.5 + fireIntensity * 0.5 }}></span>
       </div>
 
       <div className="text-center mb-6">

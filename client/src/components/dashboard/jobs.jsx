@@ -23,8 +23,9 @@ const Jobs = () => {
     fetchJobs();
   }, []);
 
-  const handleApply = (applicationLink) => {
-    window.open(applicationLink, '_blank');
+  // ✅ MODIFIED: Always opens Naukri.com on Apply Now click
+  const handleApply = () => {
+    window.open('https://www.naukri.com/', '_blank');
   };
 
   if (loading) {
@@ -107,9 +108,9 @@ const Jobs = () => {
                   </div>
                 </div>
 
-                {/* Bottom Button */}
+                {/* ✅ MODIFIED: Apply Now button always opens Naukri.com */}
                 <button
-                  onClick={() => handleApply(job.applicationLink)}
+                  onClick={handleApply}
                   className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200"
                 >
                   Apply Now

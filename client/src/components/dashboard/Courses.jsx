@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import api from '../../confiq/api';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from "react-router-dom";
 
 const Courses = () => {
   const { refreshDashboard } = useAuth();
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeQuiz, setActiveQuiz] = useState(null);
 
   const fetchCourses = async () => {
     try {
@@ -20,6 +22,7 @@ const Courses = () => {
       setLoading(false);
     }
   };
+const navigate = useNavigate();
 
   const fetchCourseDetails = async (courseId) => {
     try {
@@ -127,18 +130,18 @@ const Courses = () => {
     }
   };
 
-  const fetchQuizForLesson = async (lesson) => {
-    try {
-      toast.success(`Quiz started for ${lesson.title}`);
+ const fetchQuizForLesson = async (lesson) => {
+  try {
+    toast.success(`Quiz started for ${lesson.title}`);
 
-      // future me yahan quiz page open karoge
-      // navigate(`/quiz/${lesson.quizId}`)
+    // 👉 Quiz page open karo
+    navigate(`/quiz/${lesson._id}`);
 
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to start quiz");
-    }
-  };
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to start quiz");
+  }
+};
 
   const toggleModuleExpansion = (moduleIndex) => {
     if (!selectedCourse) return;
@@ -285,7 +288,7 @@ const Courses = () => {
                               onClick={() => fetchQuizForLesson(lesson)}
                               className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
                             >
-                              Start Quiz (Attempt 1/5)
+                              Start Quiz 
                             </button>
                           </div>
 
@@ -312,100 +315,115 @@ const Courses = () => {
 
   return (
     <div className="space-y-6 my-15">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">My Courses</h1>
-      </div>
 
-      {/* Equal Size Course Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
-        {courses.map((course) => (
-          <div
-            key={course._id}
-            className="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col"
-          >
-            {/* Image Fixed Height */}
-            {course.thumbnail && (
-              <img
-                src={course.thumbnail}
-                alt={course.name}
-                className="w-full h-48 object-cover"
-              />
-            )}
+  {/* Header */}
+  <div className="flex justify-between items-center">
+    <h1 className="text-2xl font-bold">My Courses</h1>
+  </div>
 
-            {/* Content Section */}
-            <div className="p-6 flex flex-col flex-1">
-              {/* Top Section */}
-              <div>
-                <h3 className="text-xl font-semibold mb-2 line-clamp-2">
-                  {course.name}
-                </h3>
+  {/* Courses Grid (3/3 Equal Frame) */}
+  <div className="grid grid-cols-1 md:grid-cols-2  lg:grid-cols-3 gap-6 items-stretch">
 
-                <p className="text-gray-600 mb-4 line-clamp-1">
-                  by {course.instructor}
-                </p>
+    {courses.map((course) => (
+      <div
+        key={course._id}
+        className="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col min-h-[420px] transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+      >
+
+        {/* Thumbnail */}
+        {course.thumbnail && (
+          <img
+            src={course.thumbnail}
+            alt={course.name}
+            className="w-full h-48 object-cover"
+          />
+        )}
+
+        {/* Content */}
+        <div className="p-6 flex flex-col flex-1">
+
+          {/* Top */}
+          <div>
+            <h3 className="text-xl font-semibold mb-2 line-clamp-2">
+              {course.name}
+            </h3>
+
+            <p className="text-gray-600 mb-4 line-clamp-1">
+              by {course.instructor}
+            </p>
+          </div>
+
+          {/* Middle Progress Section */}
+          <div className="space-y-4 flex-1">
+
+            {/* Progress */}
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <span>Progress</span>
+                <span>{course.progressPercentage}%</span>
               </div>
 
-              {/* Middle Section */}
-              <div className="space-y-4 flex-1">
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Progress</span>
-                    <span>{course.progressPercentage}%</span>
-                  </div>
-
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${course.progressPercentage}%` }}
-                    ></div>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Attendance</span>
-                    <span>{course.attendancePercentage}%</span>
-                  </div>
-
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-green-600 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${course.attendancePercentage}%` }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bottom Buttons */}
-              <div className="flex gap-2 mt-6">
-                <button
-                  onClick={() => fetchCourseDetails(course._id)}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                >
-                  View Course
-                </button>
-
-                <button
-                  onClick={() => markCourseComplete(course._id)}
-                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm"
-                  disabled={course.progressPercentage === 100}
-                >
-                  {course.progressPercentage === 100
-                    ? 'Completed'
-                    : 'Mark Complete'}
-                </button>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${course.progressPercentage}%` }}
+                />
               </div>
             </div>
-          </div>
-        ))}
-      </div>
 
-      {courses.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">No courses available</p>
+            {/* Attendance */}
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <span>Attendance</span>
+                <span>{course.attendancePercentage}%</span>
+              </div>
+
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${course.attendancePercentage}%` }}
+                />
+              </div>
+            </div>
+
+          </div>
+
+          {/* Buttons */}
+          <div className="flex gap-2 mt-6">
+
+            <button
+              onClick={() => fetchCourseDetails(course._id)}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+            >
+              View Course
+            </button>
+
+            <button
+              onClick={() => markCourseComplete(course._id)}
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm"
+              disabled={course.progressPercentage === 100}
+            >
+              {course.progressPercentage === 100
+                ? "Completed"
+                : "Mark Complete"}
+            </button>
+
+          </div>
+
         </div>
-      )}
+      </div>
+    ))}
+
+  </div>
+
+  {/* Empty State */}
+  {courses.length === 0 && (
+    <div className="text-center py-12">
+      <p className="text-gray-500 text-lg">No courses available</p>
     </div>
+  )}
+
+</div>
   );
 };
 
