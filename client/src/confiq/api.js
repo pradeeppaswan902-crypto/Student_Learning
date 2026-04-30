@@ -1,22 +1,18 @@
-﻿import axios from 'axios';
+﻿import axios from "axios";
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  baseURL: "http://localhost:5000/api",
 });
 
-// Add token to requests
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+// ✅ Auto token attach (BEST FIX)
+api.interceptors.request.use((config) => {
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+
+  if (storedUser?.token) {
+    config.headers.Authorization = `Bearer ${storedUser.token}`;
+  }
+
+  return config;
+});
 
 export default api;

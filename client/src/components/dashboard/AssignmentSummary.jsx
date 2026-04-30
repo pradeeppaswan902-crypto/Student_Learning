@@ -20,6 +20,7 @@ const AssignmentSummary = ({ summary: initialSummary = null, loading: externalLo
     const fetchSummary = async () => {
       try {
         const response = await api.get('/assignments/summary');
+        console.log("✅ API Response:", response.data);
         setSummary(response.data);
       } catch (error) {
         console.error('Error fetching assignment summary:', error);
@@ -84,7 +85,9 @@ const AssignmentSummary = ({ summary: initialSummary = null, loading: externalLo
         </div>
       </div>
 
-      {averageScore > 0 && (
+       {/*
+       {averageScore > 0 && (
+        
         <div className="mt-4 pt-4 border-t border-gray-200">
           <div className="flex justify-between items-center">
             <span className="text-xs text-gray-500">Average Score</span>
@@ -93,6 +96,11 @@ const AssignmentSummary = ({ summary: initialSummary = null, loading: externalLo
         </div>
       )}
 
+       
+       
+       */}
+
+      
       <div className="mt-2 pt-2 border-t border-gray-200">
         <p className="text-xs text-gray-500 text-center">
           Updates on submission or evaluation

@@ -167,7 +167,7 @@ const navigate = useNavigate();
 
   if (selectedCourse) {
     return (
-      <div className="space-y-6 my-10 ">
+      <div className="space-y-6 my-0 ">
         {/* Header */}
         <div className="flex items-center justify-between">
           <button
@@ -314,7 +314,7 @@ const navigate = useNavigate();
   }
 
   return (
-    <div className="space-y-6 my-15">
+    <div className="space-y-6 my-0">
 
   {/* Header */}
   <div className="flex justify-between items-center">
@@ -327,8 +327,7 @@ const navigate = useNavigate();
     {courses.map((course) => (
       <div
         key={course._id}
-        className="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col min-h-[420px] transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-      >
+        className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
 
         {/* Thumbnail */}
         {course.thumbnail && (

@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
 
 const AuthContext = createContext();
 
@@ -10,26 +9,14 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [dashboardRefreshTick, setDashboardRefreshTick] = useState(0);
 
-  // ✅ Load user from localStorage on app start
+  // ✅ Load user on refresh
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
-    const userName = localStorage.getItem("userName");
-    const userEmail = localStorage.getItem("userEmail");
+    const storedUser = JSON.parse(localStorage.getItem("user"));
 
-    if (token && userId) {
-      setUser({
-        token,
-        _id: userId,
-        name: userName || "Student",
-        email: userEmail || "",
-      });
-
-      // axios default header set
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    if (storedUser?.token) {
+      setUser(storedUser);
     } else {
       setUser(null);
-      delete axios.defaults.headers.common["Authorization"];
     }
 
     setLoading(false);
@@ -37,36 +24,27 @@ export const AuthProvider = ({ children }) => {
 
   // ✅ LOGIN
   const login = (token, userData = {}) => {
-    localStorage.setItem("token", token);
-
-    if (userData._id) localStorage.setItem("userId", userData._id);
-    if (userData.name) localStorage.setItem("userName", userData.name);
-    if (userData.email) localStorage.setItem("userEmail", userData.email);
-
-    setUser({
+    const userObj = {
       token,
       _id: userData._id,
       name: userData.name || "Student",
-      email: userData.email || "",
-    });
+      email: userData.email,
+    };
 
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    localStorage.setItem("user", JSON.stringify(userObj));
+    setUser(userObj);
   };
 
   // ✅ LOGOUT
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("userName");
-    localStorage.removeItem("userEmail");
-
+    localStorage.removeItem("user");
     setUser(null);
-    delete axios.defaults.headers.common["Authorization"];
   };
 
-  // ✅ Dashboard refresh trigger
-  const refreshDashboard = () =>
+  // ✅ Refresh dashboard
+  const refreshDashboard = () => {
     setDashboardRefreshTick((t) => t + 1);
+  };
 
   return (
     <AuthContext.Provider

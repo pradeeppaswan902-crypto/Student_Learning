@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import Sidebar from "../../components/dashboard/sidebar"
+import Sidebar from "../../components/dashboard/sidebar";
 import Dashboard from "../../components/dashboard/Dashboard";
 import Courses from "../../components/dashboard/Courses";
 import Assignments from "../../components/dashboard/Assignments";
@@ -42,23 +42,23 @@ const Dashboards = () => {
   };
 
   return (
-    <div className="w-full h-[90vh] flex ">
-      {/* Sidebar */}
-      <div
-        className={`bg-[var(--color-background)] duration-300 ${
-          isCollapsed ? "w-[80px]" : "w-[260px]"
+    <div className="min-h-screen bg-gray-50">
+      {/* Sidebar – fixed and self-contained */}
+      <Sidebar
+        active={active}
+        setActive={setActive}
+        isCollapsed={isCollapsed}
+        setIsCollapsed={setIsCollapsed}
+      />
+
+      {/* Main content – dynamic left margin for desktop, no margin on mobile */}
+      <main
+        className={`transition-all duration-300 pt-14 ${
+          isCollapsed ? "md:ml-16" : "md:ml-64"
         }`}
       >
-        <Sidebar
-          active={active}
-          setActive={setActive}
-          isCollapsed={isCollapsed}
-          setIsCollapsed={setIsCollapsed}
-        />
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 duration-300 p-4">{renderComponent()}</div>
+        <div className="p-4 sm:p-6">{renderComponent()}</div>
+      </main>
     </div>
   );
 };

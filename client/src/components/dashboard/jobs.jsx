@@ -40,7 +40,7 @@ const Jobs = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen my-8">
+    <div className=" bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">
           Job & Internship Opportunities
@@ -108,7 +108,7 @@ const Jobs = () => {
                   </div>
                 </div>
 
-                {/* ✅ MODIFIED: Apply Now button always opens Naukri.com */}
+                {/*  MODIFIED: Apply Now button always opens Naukri.com */}
                 <button
                   onClick={handleApply}
                   className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200"
