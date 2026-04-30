@@ -35,32 +35,30 @@ const Dashboard = () => {
   });
 
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
+      setLoading(true);
+      setError(false);
+
       try {
         const res = await api.get('/dashboard/summary');
 
         setDashboardData({
           academicScore: res.data.academicScore || 0,
-          assignmentSummary: res.data.assignmentSummary || {
-            completedAssignments: 0,
-            totalAssignments: 0,
-            averageScore: 0,
-            evaluatedAssignments: 0,
-          },
+          assignmentSummary: res.data.assignmentSummary || {},
           learningStreak: res.data.learningStreak || 0,
-          skills: res.data.skills || {
-            acquired: 0,
-            total: 0,
-          },
+          skills: res.data.skills || {},
           weeklyActivity: res.data.weeklyActivity || [],
           recentActivities: res.data.recentActivities || [],
           events: res.data.events || [],
           leaderboard: res.data.leaderboard || [],
         });
+
       } catch (error) {
         console.error('Dashboard API Error:', error);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -69,10 +67,29 @@ const Dashboard = () => {
     fetchDashboardData();
   }, [dashboardRefreshTick]);
 
-  return (
-    <div className="bg-gray-50 min-h-screen px-4 sm:px-6 lg:px-8 py-6 mt-14">
+  // 🔥 LOADING UI
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen text-gray-600 text-lg">
+        Loading dashboard...
+      </div>
+    );
+  }
 
-      {/* Greeting Section */}
+  // 🔥 ERROR UI
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen text-red-500">
+        <h2 className="text-xl font-semibold">Failed to load dashboard</h2>
+        <p className="text-sm mt-2">Please check backend connection</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-gray-50 min-h-screen px-4 sm:px-6 lg:px-8 ">
+
+      {/* Greeting */}
       <div className="mb-6">
         <GreetingSection studentName={user?.name || 'Student'} />
       </div>
@@ -83,41 +100,34 @@ const Dashboard = () => {
 
         <AssignmentSummary
           summary={dashboardData.assignmentSummary}
-          loading={loading}
         />
 
         <LearningStreak streak={dashboardData.learningStreak} />
       </div>
 
-      {/* Skills + Weekly Chart */}
+      {/* Skills + Chart */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mt-6">
 
-        <div className="w-full">
-          <SkillsAcquired
-            acquired={dashboardData.skills.acquired}
-            total={dashboardData.skills.total}
-          />
-        </div>
+        <SkillsAcquired
+          acquired={dashboardData.skills.acquired}
+          total={dashboardData.skills.total}
+        />
 
         <div className="xl:col-span-2 w-full overflow-x-auto">
           <WeeklyActivityChart data={dashboardData.weeklyActivity} />
         </div>
       </div>
 
-      {/* Events + Leaderboard + Activities */}
+      {/* Bottom Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mt-6">
 
-        <div className="w-full">
-          <EventsCalendar events={dashboardData.events} />
-        </div>
+        <EventsCalendar events={dashboardData.events} />
 
-        <div className="w-full overflow-x-auto">
+        <div className="overflow-x-auto">
           <Leaderboard students={dashboardData.leaderboard} />
         </div>
 
-        <div className="w-full">
-          <RecentActivities activities={dashboardData.recentActivities} />
-        </div>
+        <RecentActivities activities={dashboardData.recentActivities} />
       </div>
 
     </div>

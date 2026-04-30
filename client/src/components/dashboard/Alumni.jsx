@@ -37,7 +37,7 @@ const Alumni = () => {
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300 my-15">
+    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-gray-800 font-semibold text-lg">Alumni Profiles</h3>

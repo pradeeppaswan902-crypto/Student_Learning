@@ -127,7 +127,7 @@ const LearningSupport = () => {
 
   return (
     // Added top margin (mt-6) for extra spacing as requested
-    <div className="max-w-3xl mx-auto my-10 p-4 p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-4xl mx-auto mt-0 p-6 bg-white rounded-lg shadow-md">
       {/* Header */}
       <div className="mb-4">
         <h2 className="text-2xl font-bold text-gray-800">Learning Support</h2>

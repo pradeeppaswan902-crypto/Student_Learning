@@ -94,9 +94,9 @@ const Attendance = () => {
 
   if (courseDetails) {
     return (
-      <div className="space-y-6 my-20">
+      <div className="space-y-6 mt-0 mb-20">
         {/* Header */}
-        <div className="flex items-center justify-between my-8">
+        <div className="flex items-center justify-between ">
           <button
             onClick={() => {
               setSelectedCourse(null);
@@ -188,7 +188,7 @@ const Attendance = () => {
   }
 
   return (
-    <div className="space-y-6 my-16">
+    <div className="space-y-6 mt-0 mb-20">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Attendance Overview</h1>
       </div>
